@@ -5,8 +5,8 @@ FROM ghcr.io/linuxserver/baseimage-alpine-nginx:3.20
 ARG BUILD_DATE
 ARG VERSION
 ARG MASTODON_VERSION
-LABEL build_version="Linuxserver.io version:- ${VERSION} Build-date:- ${BUILD_DATE}"
-LABEL maintainer="thespad"
+LABEL build_version="Twistorystodon version:- ${VERSION} Build-date:- ${BUILD_DATE}"
+LABEL maintainer="FlohEinstein"
 
 ENV RAILS_ENV="production" \
     NODE_ENV="production" \
@@ -73,8 +73,9 @@ RUN yarn workspaces focus --production @mastodon/mastodon && \
   rm -rf /app/www/node_modules && \
   cd streaming && \
   yarn workspaces focus --production @mastodon/streaming && \
-  printf "Linuxserver.io version: ${VERSION}\nBuild-date: ${BUILD_DATE}" > /build_version
+  printf "Twistorystodon version:- ${VERSION} Build-date:- ${BUILD_DATE}" > /build_version
 RUN echo "**** cleanup ****" && \
+  find . | grep .git | xargs rm -rf && \
   yarn cache clean && \
   apk del --purge \
     build-dependencies && \
