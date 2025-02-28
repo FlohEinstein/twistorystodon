@@ -1,0 +1,6 @@
+[submodule "twitter-archive-to-mastodon"]
+	path = twitter-archive-to-mastodon
+	url = https://github.com/KevinPayravi/twitter-archive-to-mastodon
+[submodule "mastodon"]
+	path = mastodon
+	url = git@github.com:FlohEinstein/mastodon.git
