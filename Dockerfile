@@ -36,27 +36,33 @@ RUN \
     npm \
     openssl-dev \
     ruby-dev \
-    yaml-dev && \
-  echo "**** install mastodon ****" && \
-  mkdir -p /app/www && \
-  if [ -z ${MASTODON_VERSION+x} ]; then \
-    MASTODON_VERSION=$(curl -sX GET "https://api.github.com/repos/mastodon/mastodon/releases/latest" \
-    | awk '/tag_name/{print $4;exit}' FS='[""]'); \
-  fi && \
-  curl -s -o \
-    /tmp/mastodon.tar.gz -L \
-    "https://github.com/mastodon/mastodon/archive/${MASTODON_VERSION}.tar.gz" && \
-  tar xf \
-    /tmp/mastodon.tar.gz -C \
-    /app/www/ --strip-components=1 && \
-  cd /app/www && \
-  bundle config set --local deployment 'true' && \
+    yaml-dev
+
+RUN mkdir -p /app/www
+COPY mastodon/ /app/www
+  # echo "**** install mastodon ****" && \
+  # mkdir -p /app/www && \
+  # if [ -z ${MASTODON_VERSION+x} ]; then \
+    # MASTODON_VERSION=$(curl -sX GET "https://api.github.com/repos/mastodon/mastodon/releases/latest" \
+    # | awk '/tag_name/{print $4;exit}' FS='[""]'); \
+  # fi && \
+  # curl -s -o \
+    # /tmp/mastodon.tar.gz -L \
+    # "https://github.com/mastodon/mastodon/archive/${MASTODON_VERSION}.tar.gz" && \
+  # tar xf \
+    # /tmp/mastodon.tar.gz -C \
+    # /app/www/ --strip-components=1 && \
+
+WORKDIR /app/www
+  # cd /app/www && \
+
+RUN bundle config set --local deployment 'true' && \
   bundle config set --local without 'development test exclude' && \
   bundle config set silence_root_warning true && \
   bundle install -j"$(nproc)" --no-cache && \
   npm install -g corepack && \
-  corepack enable && \
-  yarn workspaces focus --production @mastodon/mastodon && \
+  corepack enable
+RUN yarn workspaces focus --production @mastodon/mastodon && \
   ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=precompile_placeholder \
   ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=precompile_placeholder \
   ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=precompile_placeholder \
@@ -67,8 +73,8 @@ RUN \
   rm -rf /app/www/node_modules && \
   cd streaming && \
   yarn workspaces focus --production @mastodon/streaming && \
-  printf "Linuxserver.io version: ${VERSION}\nBuild-date: ${BUILD_DATE}" > /build_version && \
-  echo "**** cleanup ****" && \
+  printf "Linuxserver.io version: ${VERSION}\nBuild-date: ${BUILD_DATE}" > /build_version
+RUN echo "**** cleanup ****" && \
   yarn cache clean && \
   apk del --purge \
     build-dependencies && \
